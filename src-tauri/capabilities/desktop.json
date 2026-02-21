@@ -11,6 +11,7 @@
   "permissions": [
     "positioner:default",
     "notification:default",
-    "log:default"
+    "log:default",
+    "global-shortcut:default"
   ]
 }
