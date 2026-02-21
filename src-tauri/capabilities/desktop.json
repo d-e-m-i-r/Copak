@@ -13,6 +13,7 @@
     "notification:default",
     "log:default",
     "global-shortcut:default",
-    "clipboard-manager:default"
+    "clipboard-manager:default",
+    "autostart:default"
   ]
 }
