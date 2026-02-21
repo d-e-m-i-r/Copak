@@ -9,6 +9,7 @@
     "core:default",
     "opener:default",
     "sql:default",
-    "notification:default"
+    "notification:default",
+    "log:default"
   ]
 }

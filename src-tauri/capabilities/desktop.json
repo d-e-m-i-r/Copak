@@ -10,6 +10,7 @@
   ],
   "permissions": [
     "positioner:default",
-    "notification:default"
+    "notification:default",
+    "log:default"
   ]
 }
