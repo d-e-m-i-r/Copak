@@ -12,6 +12,7 @@
     "positioner:default",
     "notification:default",
     "log:default",
-    "global-shortcut:default"
+    "global-shortcut:default",
+    "clipboard-manager:default"
   ]
 }

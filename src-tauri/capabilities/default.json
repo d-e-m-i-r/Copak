@@ -10,6 +10,7 @@
     "opener:default",
     "sql:default",
     "notification:default",
-    "log:default"
+    "log:default",
+    "clipboard-manager:default"
   ]
 }
