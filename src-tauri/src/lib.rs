@@ -47,7 +47,10 @@ fn monitor_clipboard(app: tauri::AppHandle) {
                     }
                 } //debugging purpose
                 Err(e) => {
-                    eprintln!("Failed to read clipboard content: {}", e);
+                    if !last_clipboard_content.is_empty() {
+                        eprintln!("Failed to read clipboard content: {}", e);
+                        last_clipboard_content.clear(); // Clear the last content to avoid repeated errors
+                    }
                 }
             }
             thread::sleep(Duration::from_secs(1)); // Check every second
