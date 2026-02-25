@@ -42,9 +42,7 @@ fn monitor_clipboard(app: tauri::AppHandle) {
         let mut last_hash: u64 = 0;
         if let Ok(initial_clipboard_content) = app.clipboard().read_text() {
             if !initial_clipboard_content.is_empty() {
-                let mut hasher = DefaultHasher::new();
-                initial_clipboard_content.hash(&mut hasher);
-                last_hash = hasher.finish();
+                last_hash = get_clipboard_content_hash(&initial_clipboard_content);
             }
         }
         // continuously monitor clipboard content changes
@@ -53,9 +51,7 @@ fn monitor_clipboard(app: tauri::AppHandle) {
                 Ok(current_clipboard_content) => {
                     let mut current_hash: u64 = 0;
                     if !current_clipboard_content.is_empty() {
-                        let mut hasher = DefaultHasher::new();
-                        current_clipboard_content.hash(&mut hasher);
-                        current_hash = hasher.finish();
+                        current_hash = get_clipboard_content_hash(&current_clipboard_content);
                     }
                     if current_clipboard_content.len() > 0 {
                         if current_hash != last_hash {
@@ -80,4 +76,10 @@ fn monitor_clipboard(app: tauri::AppHandle) {
             thread::sleep(Duration::from_secs(1)); // Check every second
         }
     });
+}
+
+fn get_clipboard_content_hash(clipboard_content: &str) -> u64 {
+    let mut hasher = DefaultHasher::new();
+    clipboard_content.hash(&mut hasher);
+    hasher.finish()
 }
