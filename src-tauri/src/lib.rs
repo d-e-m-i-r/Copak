@@ -1,3 +1,5 @@
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 use std::thread;
 use std::time::Duration;
 use tauri::Manager; // for method app.handle()
@@ -36,20 +38,42 @@ pub fn run() {
 
 fn monitor_clipboard(app: tauri::AppHandle) {
     thread::spawn(move || {
-        //current value of clipboard content
-        let mut last_clipboard_content = app.clipboard().read_text().unwrap_or_default();
+        // use hash to avoid String Cloning
+        let mut last_hash: u64 = 0;
+        if let Ok(initial_clipboard_content) = app.clipboard().read_text() {
+            if !initial_clipboard_content.is_empty() {
+                let mut hasher = DefaultHasher::new();
+                initial_clipboard_content.hash(&mut hasher);
+                last_hash = hasher.finish();
+            }
+        }
+        // continuously monitor clipboard content changes
         loop {
             match app.clipboard().read_text() {
                 Ok(current_clipboard_content) => {
-                    if current_clipboard_content != last_clipboard_content {
-                        println!("Clipboard content changed: {}", current_clipboard_content);
-                        last_clipboard_content = current_clipboard_content;
+                    let mut current_hash: u64 = 0;
+                    if !current_clipboard_content.is_empty() {
+                        let mut hasher = DefaultHasher::new();
+                        current_clipboard_content.hash(&mut hasher);
+                        current_hash = hasher.finish();
+                    }
+                    if current_clipboard_content.len() > 0 {
+                        if current_hash != last_hash {
+                            println!("Clipboard content changed: {}", current_clipboard_content);
+                            last_hash = current_hash;
+                        };
+                    } else {
+                        // If the clipboard is empty, we can consider it as a change
+                        if last_hash != 0 {
+                            println!("Clipboard content cleared");
+                            last_hash = 0; // Reset hash for empty content
+                        }
                     }
                 } //debugging purpose
                 Err(e) => {
-                    if !last_clipboard_content.is_empty() {
+                    if last_hash != 0 {
                         eprintln!("Failed to read clipboard content: {}", e);
-                        last_clipboard_content.clear(); // Clear the last content to avoid repeated errors
+                        last_hash = 0; // Reset hash on error to detect future changes
                     }
                 }
             }
